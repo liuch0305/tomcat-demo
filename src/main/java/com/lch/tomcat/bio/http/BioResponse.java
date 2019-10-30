@@ -11,6 +11,14 @@ public class BioResponse {
 
     private OutputStream outputStream;
 
+    public OutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    public void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
+    }
+
     public BioResponse(OutputStream outputStream) {
         this.outputStream = outputStream;
     }

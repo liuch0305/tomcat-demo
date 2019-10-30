@@ -6,7 +6,7 @@ package com.lch.tomcat.bio.http;
  **/
 public abstract class BioServlet {
 
-    void service(BioRequest request, BioResponse response) {
+    public void service(BioRequest request, BioResponse response) {
         if ("GET".equals(request.getMethod())) {
             doGet(request, response);
         } else {

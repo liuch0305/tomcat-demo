@@ -31,13 +31,13 @@ public class BioTomcat {
     private Properties properties = new Properties();
     private Map<String, BioServlet> xmlMap = new HashMap<>();
 
-    public BioTomcat(int port) throws Exception{
+    public BioTomcat(int port) throws Exception {
         this.port = port;
         init();
     }
 
     // 解析web.xml（这里采用bio-web.properties代替）
-    void init() throws Exception{
+    void init() throws Exception {
         String path = this.getClass().getResource("/").getPath();
         FileInputStream fileInputStream = new FileInputStream(path + "bio-web.properties");
         properties.load(fileInputStream);
@@ -65,31 +65,44 @@ public class BioTomcat {
          * 3、处理resquest、response
          */
 
-        ServerSocket serverSocket = new ServerSocket(8080);
-        Socket socket = serverSocket.accept();
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("开始监听" + port + "端口");
+        while (true) {
+            Socket socket = serverSocket.accept();
 
-        executorService.submit(() -> {
-            try {
-                InputStream inputStream = socket.getInputStream();
-                OutputStream outputStream = socket.getOutputStream();
-                BioRequest request = new BioRequest(inputStream);
-                BioResponse response = new BioResponse(outputStream);
+            executorService.submit(() -> {
+                try {
+                    InputStream inputStream = socket.getInputStream();
+                    OutputStream outputStream = socket.getOutputStream();
+                    BioRequest request = new BioRequest(inputStream);
+                    BioResponse response = new BioResponse(outputStream);
 
-                process(request, response);
+                    process(request, response);
 
-                inputStream.close();
-                outputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+                    inputStream.close();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
 
-
+        }
     }
 
     // 处理resquest、response
-    void process(BioRequest request, BioResponse response) {
-
+    void process(BioRequest request, BioResponse response) throws IOException {
+        String url = request.getUrl();
+        if (xmlMap.containsKey(url)) {
+            BioServlet bioServlet = xmlMap.get(url);
+            bioServlet.service(request, response);
+        } else {
+            StringBuilder str404 = new StringBuilder();
+            str404.append("HTTP/1.1 404 OK\n")
+                    .append("Server: tomcat\n")
+                    .append("\r\n")
+                    .append("404");
+            response.getOutputStream().write(str404.toString().getBytes());
+        }
     }
 
     public static void main(String[] args) throws Exception {

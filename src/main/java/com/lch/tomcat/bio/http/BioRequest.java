@@ -22,8 +22,8 @@ public class BioRequest {
                 String fisrtLine = httpStr.split("\\n")[0];
                 String[] fisrtLineArr = fisrtLine.split(" ");
 
-                url = fisrtLineArr[0];
-                method = fisrtLineArr[1];
+                url = fisrtLineArr[1];
+                method = fisrtLineArr[0];
 
             }
         } catch (IOException e) {
