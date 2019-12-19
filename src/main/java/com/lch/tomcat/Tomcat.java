@@ -34,7 +34,7 @@ public class Tomcat {
         init();
     }
 
-    void init() throws Exception {
+    private void init() throws Exception {
         String path = this.getClass().getResource("/").getPath();
         // TODO: 2019-12-16 liuchenhui 如何替换web.properties文件配置
         FileInputStream fileInputStream = new FileInputStream(path + "web.properties");
@@ -75,7 +75,7 @@ public class Tomcat {
         }
     }
 
-    void start() {
+    public void start() {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
