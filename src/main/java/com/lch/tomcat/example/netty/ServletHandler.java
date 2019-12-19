@@ -1,9 +1,9 @@
-package com.lch.tomcat.netty;
+package com.lch.tomcat.example.netty;
 
 
-import com.lch.tomcat.netty.http.NettyRequest;
-import com.lch.tomcat.netty.http.NettyResponse;
-import com.lch.tomcat.netty.http.NettyServlet;
+import com.lch.tomcat.example.netty.http.NettyRequest;
+import com.lch.tomcat.example.netty.http.NettyResponse;
+import com.lch.tomcat.example.netty.http.NettyServlet;
 
 import java.util.Map;
 

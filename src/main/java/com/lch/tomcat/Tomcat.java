@@ -1,6 +1,4 @@
-package com.lch.tomcat.netty;
-
-import com.lch.tomcat.netty.http.NettyServlet;
+package com.lch.tomcat;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -19,44 +17,65 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * netty版Tomcat入口,与bio版基本一致，netty本身就支持http协议，省去了解析http协议的步骤
- *
  * @author: liuchenhui
- * @create: 2019-10-28 18:37
+ * @create: 2019-12-16 15:53
  **/
-@SuppressWarnings("all")
-public class NettyTomcat {
-
+@Slf4j
+public class Tomcat {
+    public static final String SERVLET_PORT = "port";
     private int port;
     private Properties properties = new Properties();
-    private Map<String, NettyServlet> xmlMap = new HashMap<>();
+    private Map<String, HttpServelt> xmlMap = new HashMap<>();
 
-    public NettyTomcat(int port) throws Exception {
-        this.port = port;
+    public Tomcat() throws Exception {
         init();
     }
 
     void init() throws Exception {
         String path = this.getClass().getResource("/").getPath();
-        FileInputStream fileInputStream = new FileInputStream(path + "netty-web.properties");
+        // TODO: 2019-12-16 liuchenhui 如何替换web.properties文件配置
+        FileInputStream fileInputStream = new FileInputStream(path + "web.properties");
         properties.load(fileInputStream);
 
         Set<Object> objects = properties.keySet();
         for (Object k : objects) {
             String kStr = (String) k;
+            if (SERVLET_PORT.equals(k)) {
+                try {
+                    this.port = Integer.parseInt(properties.getProperty(kStr));
+                    continue;
+                } catch (NumberFormatException e) {
+                    log.error("port is not a number", e);
+                }
+            }
             if (!kStr.endsWith("url")) {
                 continue;
             }
-            String serverName = kStr.replace(".url", "");
             String url = properties.getProperty(kStr);
+            String serverName = kStr.replace(".url", "");
             String serverClass = properties.getProperty(serverName + ".servlet");
-            xmlMap.put(url, (NettyServlet) Class.forName(serverClass).newInstance());
+            String initParam = properties.getProperty(serverName + ".initParam");
+            HttpServelt httpServelt =  (HttpServelt) Class.forName(serverClass).newInstance();
+            ServletConfig servletConfig = new ServletConfig() {
+                @Override
+                public String getServletName() {
+                    return serverName;
+                }
+
+                @Override
+                public String getInitParameter(String name) {
+                    return initParam;
+                }
+            };
+            httpServelt.init(servletConfig);
+            xmlMap.put(url, (HttpServelt) Class.forName(serverClass).newInstance());
         }
     }
 
-    void start(){
+    void start() {
         ServerBootstrap serverBootstrap = new ServerBootstrap();
 
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -71,7 +90,7 @@ public class NettyTomcat {
                             ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new HttpResponseEncoder())
                                     .addLast(new HttpRequestDecoder())
-                                    .addLast(new ServletHandler(xmlMap));
+                                    .addLast(new TomcatServletHandler(xmlMap));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
@@ -91,6 +110,6 @@ public class NettyTomcat {
     }
 
     public static void main(String[] args) throws Exception {
-        new NettyTomcat(8080).start();
+        new Tomcat().start();
     }
 }

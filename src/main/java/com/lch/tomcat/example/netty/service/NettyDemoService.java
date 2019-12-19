@@ -1,8 +1,8 @@
-package com.lch.tomcat.netty.service;
+package com.lch.tomcat.example.netty.service;
 
-import com.lch.tomcat.netty.http.NettyRequest;
-import com.lch.tomcat.netty.http.NettyResponse;
-import com.lch.tomcat.netty.http.NettyServlet;
+import com.lch.tomcat.example.netty.http.NettyRequest;
+import com.lch.tomcat.example.netty.http.NettyResponse;
+import com.lch.tomcat.example.netty.http.NettyServlet;
 
 /**
  * @author: liuchenhui

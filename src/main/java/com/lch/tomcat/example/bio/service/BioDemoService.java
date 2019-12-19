@@ -1,8 +1,8 @@
-package com.lch.tomcat.bio.service;
+package com.lch.tomcat.example.bio.service;
 
-import com.lch.tomcat.bio.http.BioRequest;
-import com.lch.tomcat.bio.http.BioResponse;
-import com.lch.tomcat.bio.http.BioServlet;
+import com.lch.tomcat.example.bio.http.BioRequest;
+import com.lch.tomcat.example.bio.http.BioResponse;
+import com.lch.tomcat.example.bio.http.BioServlet;
 
 /**
  * @author: liuchenhui

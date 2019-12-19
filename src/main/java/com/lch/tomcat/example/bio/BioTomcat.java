@@ -1,8 +1,8 @@
-package com.lch.tomcat.bio;
+package com.lch.tomcat.example.bio;
 
-import com.lch.tomcat.bio.http.BioRequest;
-import com.lch.tomcat.bio.http.BioResponse;
-import com.lch.tomcat.bio.http.BioServlet;
+import com.lch.tomcat.example.bio.http.BioRequest;
+import com.lch.tomcat.example.bio.http.BioResponse;
+import com.lch.tomcat.example.bio.http.BioServlet;
 
 import java.io.FileInputStream;
 import java.io.IOException;

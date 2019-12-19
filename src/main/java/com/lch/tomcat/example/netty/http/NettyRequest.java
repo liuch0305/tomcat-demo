@@ -1,4 +1,4 @@
-package com.lch.tomcat.netty.http;
+package com.lch.tomcat.example.netty.http;
 
 import io.netty.handler.codec.http.HttpRequest;
 
