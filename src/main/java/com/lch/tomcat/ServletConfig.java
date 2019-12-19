@@ -8,5 +8,5 @@ public interface ServletConfig {
 
     public String getServletName();
 
-    public String getInitParameter(String name);
+    public String getInitParameter();
 }

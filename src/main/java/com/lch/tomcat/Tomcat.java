@@ -66,7 +66,7 @@ public class Tomcat {
                 }
 
                 @Override
-                public String getInitParameter(String name) {
+                public String getInitParameter() {
                     return initParam;
                 }
             };
