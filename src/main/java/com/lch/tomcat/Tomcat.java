@@ -58,7 +58,7 @@ public class Tomcat {
             String serverName = kStr.replace(".url", "");
             String serverClass = properties.getProperty(serverName + ".servlet");
             String initParam = properties.getProperty(serverName + ".initParam");
-            HttpServelt httpServelt =  (HttpServelt) Class.forName(serverClass).newInstance();
+            HttpServelt httpServelt = (HttpServelt) Class.forName(serverClass).newInstance();
             ServletConfig servletConfig = new ServletConfig() {
                 @Override
                 public String getServletName() {
