@@ -71,7 +71,7 @@ public class Tomcat {
                 }
             };
             httpServelt.init(servletConfig);
-            xmlMap.put(url, (HttpServelt) Class.forName(serverClass).newInstance());
+            xmlMap.put(url, httpServelt);
         }
     }
 

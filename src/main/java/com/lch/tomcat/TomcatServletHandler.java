@@ -25,6 +25,8 @@ import io.netty.util.CharsetUtil;
 @SuppressWarnings("all")
 public class TomcatServletHandler extends ChannelInboundHandlerAdapter {
 
+    public static final String DEAFULT_URL = "/favicon.ico";
+
     private Map<String, HttpServelt> xmlMap;
 
     public TomcatServletHandler(Map<String, HttpServelt> xmlMap) {
@@ -44,11 +46,16 @@ public class TomcatServletHandler extends ChannelInboundHandlerAdapter {
             HttpServletResponse nResponse = new Response(ctx);
 
             String url = nRequest.getRequestURL();
+            if (DEAFULT_URL.equals(url)) {
+                nResponse.write("");
+                // TODO: 2019-12-20 liuchenhui 为啥请求完了还得再发个favicon.ico
+                return;
+            }
 
             String matchUrl = "";
             if (xmlMap.containsKey(url)) {
                 xmlMap.get(url).service(nRequest, nResponse);
-            } else if (match(xmlMap, nRequest, matchUrl)) {
+            } else if ((matchUrl = match(xmlMap, nRequest, matchUrl)) != "") {
                 xmlMap.get(matchUrl).service(nRequest, nResponse);
             } else {
                 nResponse.sendError(404, "404-NO FOUND");
@@ -63,21 +70,20 @@ public class TomcatServletHandler extends ChannelInboundHandlerAdapter {
                 HttpVersion.HTTP_1_1,
                 // 设置响应状态码
                 HttpResponseStatus.INTERNAL_SERVER_ERROR,
-                Unpooled.wrappedBuffer(cause.getStackTrace().toString().getBytes(CharsetUtil.UTF_8)) );
+                Unpooled.wrappedBuffer(cause.getStackTrace().toString().getBytes(CharsetUtil.UTF_8)));
         ctx.writeAndFlush(response);
         ctx.close();
     }
 
-    private boolean match(Map<String, HttpServelt> xmlMap, HttpServletRequest nRequest, String matchUrl) {
+    private String match(Map<String, HttpServelt> xmlMap, HttpServletRequest nRequest, String matchUrl) {
         for (Map.Entry<String, HttpServelt> entry : xmlMap.entrySet()) {
             String key = entry.getKey();
-            String requestURI = nRequest.getRequestURI();
+            String requestURI = nRequest.getRequestURL();
             if (match(key, requestURI)) {
-                matchUrl = requestURI;
-                return true;
+                return key;
             }
         }
-        return false;
+        return "";
     }
 
     private static boolean match(String key, String requestURI) {
