@@ -7,9 +7,16 @@ import com.lch.tomcat.http.Response;
 
 import java.util.Map;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.util.CharsetUtil;
 
 /**
  * @author: liuchenhui
@@ -47,6 +54,18 @@ public class TomcatServletHandler extends ChannelInboundHandlerAdapter {
                 nResponse.sendError(404, "404-NO FOUND");
             }
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                // 设置http版本为1.1
+                HttpVersion.HTTP_1_1,
+                // 设置响应状态码
+                HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                Unpooled.wrappedBuffer(cause.getStackTrace().toString().getBytes(CharsetUtil.UTF_8)) );
+        ctx.writeAndFlush(response);
+        ctx.close();
     }
 
     private boolean match(Map<String, HttpServelt> xmlMap, HttpServletRequest nRequest, String matchUrl) {
